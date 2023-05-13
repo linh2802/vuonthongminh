@@ -1,0 +1,233 @@
+#include <16F877A.h>
+#device *=16 adc=10
+#fuses HS,NOWDT,NOPROTECT,NOLVP
+#use delay(clock=4M)
+#include <lcd.h>
+//////////////////////////////////
+#define BTMode input(PIN_B0)
+#define BTUp   input(PIN_B1)
+#define BTDown input(PIN_B2)
+#define BTMal  input(PIN_B3)
+#define Relay  PIN_B4
+//////////////////////////////////
+int8 Mode;
+unsigned int8 TempLv, HumiLv;//Nhiet Do, Do Am cai dat
+unsigned int8 TempS, HumiS;//Nhiet Do, Do Am tu cam bien
+int1 Status = 0;
+//////////////////////////////////
+//#int_ext
+//_NgatRB()
+//{  
+ //  Mode++;
+ //  lcd_putc('\f');
+ //  if (Mode==4)
+ //     Mode = 0;
+ //  return Mode;
+//}
+//////////////////////////////////
+void _ConRelay(unsigned int8 TempLv, unsigned int8 HumiLv, unsigned int8 TempS, unsigned int8 HumiS);
+void _BtMode(int8 Mode);
+int16 _ReadADC(unsigned int8 Pin);
+int8 _ReadTemp(unsigned int16 GiaTriADC0);
+int8 _ReadHumi(unsigned int16 GiaTriADC1);
+/////////////////////////////////.
+void main()
+{  
+   if (BTMode==0)
+   {
+      Mode++;
+   }
+   if (Mode==4)
+   {
+    Mode=0;
+   }
+   else return Mode;    
+   unsigned int16 GiaTriADC0,GiaTriADC1;
+   SET_TRIS_A(0xff);
+   SET_TRIS_D(0x00);
+   SET_TRIS_B(0xff);
+   //
+   enable_interrupts(int_ext);
+   ext_int_edge(h_to_l);
+   enable_interrupts(global);
+   Mode = 0;
+   //
+   TempLv = read_eeprom(0x02);
+   HumiLv = read_eeprom(0x08);
+   //
+   setup_adc(ADC_CLOCK_INTERNAL);
+   setup_adc_ports(AN0_AN1_AN2_AN3_AN4);
+   //
+   lcd_init();
+   lcd_putc('\f');
+   lcd_gotoxy(1,1);
+   printf(lcd_putc,"  HE THONG TUOI CAY ");
+   lcd_gotoxy(1,2);
+   printf(lcd_putc,"      TU DONG");
+   delay_ms(5000);
+   lcd_putc('\f');
+   while(TRUE)
+   {
+      GiaTriADC0 = _ReadADC(0);
+      GiaTriADC1 = _ReadADC(1);
+      //Nhiet do, Do am tu cam bien
+      TempS = _ReadTemp(GiaTriADC0);
+      HumiS = _ReadHumi(GiaTriADC1);
+
+      switch(Mode)
+      {
+         case 0:  
+            lcd_gotoxy(1,1);
+            printf(lcd_putc,"     Setup   Sensor");
+            lcd_gotoxy(1,2);
+            printf(lcd_putc,"Temp: ");
+            lcd_gotoxy(1,3);
+            printf(lcd_putc,"Humi: ");    
+            lcd_gotoxy(7,2);
+            printf(lcd_putc,"%02d",TempLv);
+            lcd_putc(223);
+            lcd_putc("C    ");
+            lcd_gotoxy(7,3);
+            printf(lcd_putc,"%02d",HumiLv);
+            lcd_putc("%     ");
+            
+            lcd_gotoxy(15,2);
+            printf(lcd_putc,"%02d",TempS); lcd_putc(223); lcd_putc(67);  
+            lcd_gotoxy(15,3);
+            printf(lcd_putc,"%02d",HumiS); lcd_putc("% ");   
+            
+            _ConRelay(TempLv, HumiLv, TempS, HumiS);
+            break;
+
+         case 1:
+            lcd_gotoxy(1,1);
+            printf(lcd_putc,"                    ");
+            lcd_gotoxy(1,2);
+            printf(lcd_putc,"Nhan nut MAL      ");
+            lcd_gotoxy(1,3);
+            printf(lcd_putc,"de bat/tat may bom");
+            
+            if(BTMal == 0)
+            {
+               delay_ms(20);
+               while(BTMal == 0);
+               if(Status == 1)
+               {
+                  Status = 0;              
+                  output_high(Relay);
+                  lcd_gotoxy(1,4);
+                  printf(lcd_putc,"May bom bat");
+               }
+               else
+               {
+                  Status = 1;
+                  output_low(Relay);
+                  lcd_gotoxy(1,4);
+                  printf(lcd_putc,"May bom tat");
+               }               
+            }
+            break;     
+         case 2:
+            if(BTUp == 0)
+            {
+               delay_ms(20);
+               while(BTUp == 0);
+               TempLv = TempLv + 1;
+               if(TempLv >= 100)
+               TempLv = 100;
+            }
+            else if(BTDown == 0)
+            {
+               delay_ms(20);
+               while(BTDown == 0);
+               TempLv = TempLv - 1;
+               if(TempLv <= 0)
+               TempLv = 0;
+            }  
+            
+            write_eeprom(0x02, TempLv);
+            
+            lcd_gotoxy(1,1);
+            printf(lcd_putc,"Cai Muc Nhiet Do  ");
+            lcd_gotoxy(1,2);
+            printf(lcd_putc,"Temp: %02d",TempLv);
+            lcd_putc(223);
+            lcd_putc("C   ");
+            lcd_gotoxy(14,2);
+            printf(lcd_putc,"      ");
+            lcd_gotoxy(1,3);
+            printf(lcd_putc,"                    ");
+            lcd_gotoxy(1,4);
+            printf(lcd_putc,"                    ");
+            break;
+         case 3:
+            if(BTUp == 0)
+            {
+               delay_ms(20);
+               while(BTUp == 0);
+               HumiLv = HumiLv + 1;
+               if(HumiLv >= 100)
+               HumiLv = 100;
+            }
+            else if(BTDown == 0)
+            {
+               delay_ms(20);
+               while(BTDown == 0);
+               HumiLv = HumiLv - 1;
+               if(HumiLv <= 0)
+               HumiLv = 0;
+            }  
+            
+            write_eeprom(0x08, HumiLv);
+            
+            lcd_gotoxy(1,1);
+            printf(lcd_putc,"Cai Muc Do Am      ");
+            lcd_gotoxy(1,2);
+            printf(lcd_putc,"Humi: %02d",HumiLv);
+            lcd_putc("% ");
+            break;
+      }
+   }
+}
+
+void _ConRelay(unsigned int8 TempLv, unsigned int8 HumiLv, unsigned int8 TempS, unsigned int8 HumiS)
+{
+   if (TempS >= TempLv && HumiS <= HumiLv)
+   {
+      output_high(Relay);
+      lcd_gotoxy(1,4);
+      printf(lcd_putc,"May bom bat");
+   }
+   else
+   {
+      output_low(Relay);
+      lcd_gotoxy(1,4);
+      printf(lcd_putc,"May bom tat");
+   }
+}
+
+int16 _ReadADC(unsigned int8 Pin)
+{
+   set_adc_channel(Pin);
+   unsigned int16 Value = read_adc();
+   return Value;
+}
+
+int8 _ReadTemp(unsigned int16 GiaTriADC0)
+{
+   float DienAp = ((float)GiaTriADC0 * 500)/1023.0f;
+   return (int8)DienAp;
+   /*LM35
+      datasheet:
+      10mv                   -->      1 C
+      (5000*GiaTriADC)/1023  -->      y
+      => y = ((5000*GiaTriADC)/1023)/10 = (500*GiaTriADC)/1023*/
+}
+
+int8 _ReadHumi(unsigned int16 GiaTriADC1)
+{
+   unsigned int32 Value;
+   Value = ((int32)GiaTriADC1*100)/1023;
+   return (int8)Value;
+}
+

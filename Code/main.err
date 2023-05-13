@@ -1,0 +1,7 @@
+Compiling C:\Users\84834\Desktop\Doanmonhoc\Code1\Code\main on 08-Jan-23 at 17:59
+>>> Warning 216 "C:\Users\84834\Desktop\Doanmonhoc\Code1\Code\main.c" Line 250(1,2): Interrupts disabled during call to prevent re-entrancy:  (@delay_ms2)
+>>> Warning 216 "C:\Users\84834\Desktop\Doanmonhoc\Code1\Code\main.c" Line 250(1,2): Interrupts disabled during call to prevent re-entrancy:  (lcd_putc)
+>>> Warning 216 "C:\Users\84834\Desktop\Doanmonhoc\Code1\Code\main.c" Line 250(1,2): Interrupts disabled during call to prevent re-entrancy:  (lcd_gotoxy)
+      Memory usage:   ROM=53%      RAM=11% - 20%
+      0 Errors,  3 Warnings.
+Build Successful.

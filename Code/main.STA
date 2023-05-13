@@ -1,0 +1,105 @@
+
+ROM used:   4311/8192 (53%)
+            5397/8192 (66%) including unused fragments
+
+            1.1 Average locations per line
+            7.5 Average locations per statement
+
+RAM used:   42/368 (11%) at main() level
+            74/368 (20%) worst case
+
+Stack used: 6 worst case (3 in main + 3 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  252   162  28  main.c
+  707     0   0  ..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16F877A.h
+  258    95  16  lcd.h
+ 2228   258  45  ..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\math.h
+  227    63  11  DS1307.c
+  195     0   0  ..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\stdint.h
+----- -----
+ 3867   578 Total
+
+Page ROM  %  RAM    Vol Diff  Functions:
+---- --- --- ---    --- ----  ----------
+ Inline         4             @SFTOI
+ Inline         2             @ITOF
+ Inline        13             @MULFF
+ Inline        14             @DIVFF
+0     21   0    1             @delay_ms2
+0      8   0    0             @const869
+0    433  10    2    798  4.4  lcd_init
+ Inline         3    620  3.8  lcd_read_byte
+ Inline         2    204  3.2  lcd_read_nibble
+ Inline         3    313  3.4  lcd_send_byte
+ Inline         1    336  1.9  lcd_send_nibble
+0    297   7    4    335  5.5  lcd_gotoxy
+0    822  19    1    295  3.7  lcd_putc
+0     21   0    3             @DIV88
+0     17   0    0    108  3.3  _NgatRB
+2   1292  30    7   6370  8.9  MAIN
+0     11   0    0             @const991
+0     98   2    4             @PSTRINGC7_866
+0      7   0    0             @const996
+0     10   0    0             @const997
+0      4   0    0             @const998
+0      4   0    0             @const999
+1    123   3    6             @PRINTF_D0_866
+0      3   0    0             @const1004
+0      4   0    0             @const1006
+0      2   0    0             @const1009
+0     11   0    0             @const1010
+0     10   0    0             @const1011
+0     10   0    0             @const1012
+0      6   0    0             @const1013
+0      6   0    0             @const1014
+0     10   0    0             @const1015
+0      6   0    0             @const1016
+1    103   2    5             @PSTRINGCN7_866
+0      3   0    0             @const1019
+0      4   0    0             @const1020
+0     11   0    0             @const1021
+0     11   0    0             @const1022
+0     10   0    0             @const1023
+0      6   0    0             @const1024
+0      2   0    0             @const1025
+0     11   0    0             @const1026
+1     81   2    2             @PRINTF_U_866
+0     12   0    0             @const1030
+0      9   0    0             @const1031
+2      9   0    0             @goto19849
+1     64   1    4    313  5.0  _ConRelay
+0      6   0    0             @const1033
+0      6   0    0             @const1034
+0     28   1    3     74  2.5  _ReadADC
+1    446  10   10     95  3.0  _ReadTemp
+1    174   4   10    108  3.5  _ReadHumi
+ Inline        13             @MUL3232
+ Inline        13             @DIV3232
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               13
+    Statements              578
+    Comments                627
+    Volume (V)              13765
+    Difficulty (D)          50.0
+    Effort to implement (E) 688280
+    Time to implement (T)   10 hours, 37 minutes
+    Est Delivered Bugs (B)  3
+    Cyclomatic Complexity   27
+    Maintainability (MI)    24
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-0004E    75  0  
+0004F-007FF  1940  29  
+00800-00FFF   991  1057  
+01000-017FF  1301  747  
+01800-01FFF     0  2048  
+
+
+
